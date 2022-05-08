@@ -128,13 +128,13 @@ public class ServerWebSocketHandler extends TextWebSocketHandler {
                                        String receiver,
                                        String message,
                                        boolean isRead) {
-        return MySQLMessageDto.builder()
-                .message(message)
-                .chatRoomId(chatRoomId)
-                .receiver(receiver)
-                .sender(sender)
-                .isRead(isRead)
-                .build();
+        var mySqlDto = new MySQLMessageDto();
+        mySqlDto.setMessage(message);
+        mySqlDto.setChatRoomId(chatRoomId);
+        mySqlDto.setReceiver(receiver);
+        mySqlDto.setSender(sender);
+        mySqlDto.setRead(isRead);
+        return mySqlDto;
     }
 
     private String setRedisMessage(String user, SocketMessageDto requestValues) {
@@ -146,8 +146,14 @@ public class ServerWebSocketHandler extends TextWebSocketHandler {
 
     private boolean containValidHeaders(WebSocketSession session) {
         var handshakeHeaders = session.getHandshakeHeaders();
-        return handshakeHeaders.containsKey(ID_HEADER_KEY)
-                && handshakeHeaders.containsKey(ROOM_ID_HEADER_KEY);
+        if (handshakeHeaders.containsKey(ID_HEADER_KEY)
+                && handshakeHeaders.containsKey(ROOM_ID_HEADER_KEY)) {
+            var roomId = handshakeHeaders
+                    .get(ROOM_ID_HEADER_KEY).get(0);
+            return chatRoomService.findById(roomId).isPresent();
+        } else {
+            return false;
+        }
     }
 }
 
