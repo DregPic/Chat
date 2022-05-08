@@ -31,13 +31,10 @@ import static com.example.demo.CommonConstant.*;
 @Component
 @Slf4j
 public class ServerWebSocketHandler extends TextWebSocketHandler {
-
     @Autowired
     private RedisTemplate template;
-
     @Autowired
     private ChatRoomService chatRoomService;
-
     private ObjectMapper objectMapper = new ObjectMapper();
     @Autowired
     private ChannelTopic topic;
@@ -126,14 +123,18 @@ public class ServerWebSocketHandler extends TextWebSocketHandler {
                 .get(0);
     }
 
-    private MySQLMessageDto setMessage(String chatRoomId, String sender, String receiver, String message, boolean isRead) {
-        var mySQLMessage = new MySQLMessageDto();
-        mySQLMessage.setMessage(message);
-        mySQLMessage.setChatRoomId(chatRoomId);
-        mySQLMessage.setReceiver(receiver);
-        mySQLMessage.setSender(sender);
-        mySQLMessage.setRead(isRead);
-        return mySQLMessage;
+    private MySQLMessageDto setMessage(String chatRoomId,
+                                       String sender,
+                                       String receiver,
+                                       String message,
+                                       boolean isRead) {
+        return MySQLMessageDto.builder()
+                .message(message)
+                .chatRoomId(chatRoomId)
+                .receiver(receiver)
+                .sender(sender)
+                .isRead(isRead)
+                .build();
     }
 
     private String setRedisMessage(String user, SocketMessageDto requestValues) {
