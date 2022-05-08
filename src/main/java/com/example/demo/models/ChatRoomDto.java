@@ -23,7 +23,7 @@ import java.util.UUID;
 public class ChatRoomDto {
     @Id
     private String id = UUID.randomUUID().toString();
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     @JsonProperty(value = "room_name")
     private String roomName;
     @Column

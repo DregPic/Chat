@@ -9,7 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SocketMessageDto {
-    @JsonProperty(value = "chat_room")
-    private String chatRoom;
     private String message;
 }

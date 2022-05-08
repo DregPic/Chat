@@ -12,11 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.socket.TextMessage;
 
-import static com.example.demo.CommandConstant.ID_HEADER_KEY;
 import static com.example.demo.handlers.ServerWebSocketHandler.sessions;
 
 import java.util.Map;

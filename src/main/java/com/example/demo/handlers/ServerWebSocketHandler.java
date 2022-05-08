@@ -64,19 +64,27 @@ public class ServerWebSocketHandler extends TextWebSocketHandler {
     protected void handleTextMessage(WebSocketSession session, TextMessage message) {
         var request = message.getPayload();
         var senderId = Objects.requireNonNull(session.getHandshakeHeaders()
-                .get(ID_HEADER_KEY))
+                        .get(ID_HEADER_KEY))
                 .get(0);
         var requestValues = objectMapper.readValue(request, SocketMessageDto.class);
-        String chatRoom = requestValues.getChatRoom();
+        String chatRoom = Objects.requireNonNull(session.getHandshakeHeaders()
+                        .get(ROOM_ID_HEADER_KEY))
+                .get(0);
         var chatUsers = chatRoomService
                 .findById(chatRoom)
                 .get().getUsersIds();
-        var filteredUsers = Arrays.stream(chatUsers).filter(e -> !e.equals(senderId)).toList();
+        var filteredUsers = Arrays.stream(chatUsers)
+                .filter(e -> !e.equals(senderId)).toList();
 
         filteredUsers.forEach(user -> {
             MySQLMessageDto messageDto;
-            if (session.getHandshakeHeaders().get(ROOM_ID_HEADER_KEY)
-                    .equals(requestValues.getChatRoom())) {
+            var userCurrentRoom = "";
+            if (sessions.containsKey(user)) {
+                userCurrentRoom = sessions.get(user)
+                        .getHandshakeHeaders()
+                        .get(ROOM_ID_HEADER_KEY).get(0);
+            }
+            if (!userCurrentRoom.isEmpty() && chatRoom.equals(userCurrentRoom)) {
                 messageDto = setMessage(chatRoom,
                         senderId, ///SAVE message in MySql DB
                         user,
